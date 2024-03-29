@@ -1,0 +1,69 @@
+services:
+
+  rabbitmq:
+    image: rabbitmq:3.13-management
+    container_name: rabbitmq
+    restart: on-failure
+    hostname: rabbit1
+    environment:
+      - RABBITMQ_DEFAULT_USER=user
+      - RABBITMQ_DEFAULT_PASS=parola
+    ports:
+      - "8081:15672"
+    networks:
+      - rabbit_connection
+
+  companies:
+    container_name: microservice_companies
+    restart: on-failure
+    build: 
+      context: .
+      dockerfile: Dockerfile.companies
+      args:
+        - SERVER_NAME=companies_service
+    environment:
+        - PORT=3001
+        - RABBIT_HOST=rabbitmq
+        - RABBIT_USERNAME=user
+        - RABBIT_PASSWORD=parola
+    networks:
+      - proxy_service
+      - rabbit_connection
+    
+    
+  people:
+    container_name: microservice_people
+    restart: on-failure
+    build: 
+      context: .
+      dockerfile: Dockerfile.people
+      args:
+        - SERVER_NAME=people_service
+    environment:
+        - PORT=3002
+        - COMPANY_SERVICE=http://companies:3001
+        - RABBIT_HOST=rabbitmq
+        - RABBIT_USERNAME=user
+        - RABBIT_PASSWORD=parola
+    networks:
+      - proxy_service
+      - rabbit_connection
+
+  gateway:
+    container_name: gateway
+    restart: on-failure
+    build:
+      context: .
+      dockerfile: Dockerfile.haproxy
+    ports:
+      - "8080:80"
+    networks:
+      - proxy_service
+
+networks:
+  proxy_service:
+    name: proxy_service
+    driver: bridge
+  rabbit_connection:
+    name: rabbit_connection
+    driver: bridge

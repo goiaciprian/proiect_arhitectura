@@ -1,0 +1,29 @@
+FROM node:20.9.0-alpine as base
+
+FROM base as buildtime
+
+WORKDIR /workspace/common_services
+COPY common_services/ .
+
+RUN npm ci
+RUN npm run build
+
+WORKDIR /workspace/app
+
+COPY microservice_people/package.json package.json
+COPY microservice_people/package-lock.json package-lock.json
+COPY ./microservice_people/ .
+
+RUN npm ci
+RUN npm run build
+
+FROM base as runtime
+
+ARG SERVER_NAME=micro1
+ENV SERVER_NAME=${SERVER_NAME}
+
+WORKDIR /workspace
+
+COPY --from=buildtime /workspace/ .
+
+ENTRYPOINT [ "node", "app/dist/index.js" ]

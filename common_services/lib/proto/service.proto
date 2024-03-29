@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+message RequestDto {
+    string nume = 1;
+}
+
+message ResponseDto {
+    int32 valoare_estimata = 1;
+}
+
+service CompanyService {
+    rpc ValoareEstimata (RequestDto) returns (ResponseDto);
+}
