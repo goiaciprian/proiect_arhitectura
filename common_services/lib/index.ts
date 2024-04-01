@@ -1,12 +1,12 @@
 import { Logger } from "./logger"
 import { RabbitMQConnection } from "./rabbitmq.connection"
-import type { RabbitPeople,GrpcRequestDto, GrpcResponseDto, GrpcServer } from "./types"
-import { proto as protoPackageDefinitions } from './proto';
+import type { RabbitPeople, GrpcRequestDto, GrpcResponseDto, GrpcServer } from "./types"
+
+export * as proto from './generated/service';
 
 export {
     Logger,
     RabbitMQConnection,
-    protoPackageDefinitions
 }
 
 export type {

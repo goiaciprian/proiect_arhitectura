@@ -23,7 +23,7 @@ export class Logger implements ILogger {
         console.log(`[${this.server_name}]: ${message}`);
     }
 
-    error(message: string) {
+    error(message: string | Error) {
         console.error(`[${this.server_name}]: ${message}`);
     }
 

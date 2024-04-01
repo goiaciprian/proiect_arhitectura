@@ -29,6 +29,8 @@ services:
     networks:
       - proxy_service
       - rabbit_connection
+    depends_on:
+      - rabbitmq
     
     
   people:
@@ -48,17 +50,25 @@ services:
     networks:
       - proxy_service
       - rabbit_connection
+    depends_on:
+      - rabbitmq
 
   gateway:
     container_name: gateway
     restart: on-failure
     build:
       context: .
-      dockerfile: Dockerfile.haproxy
+      dockerfile: Dockerfile.gateway
     ports:
       - "8080:80"
     networks:
       - proxy_service
+    environment:
+      - COMPANY_SERVICE_URL=http://companies:3001
+      - PEOPLE_SERVICE_URL=people:3002
+    depends_on:
+      - people
+      - companies
 
 networks:
   proxy_service:

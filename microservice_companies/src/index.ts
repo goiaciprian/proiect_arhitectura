@@ -3,7 +3,7 @@
  */
 
 import express, { Express, Request, Response } from "express";
-import { Logger,RabbitMQConnection, RabbitPeople, protoPackageDefinitions } from "common_services";
+import { Logger,RabbitMQConnection, RabbitPeople } from "common_services";
 import { faker } from '@faker-js/faker';
 
 

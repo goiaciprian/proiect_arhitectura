@@ -1,6 +1,6 @@
 export interface RabbitPeople {
     nume: string;
-    numar_angajati: number;
+    functie: string;
 }
 
 export interface GrpcRequestDto {
