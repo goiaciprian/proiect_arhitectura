@@ -1,7 +1,7 @@
 import express, { Express } from 'express';
 import dotenv from 'dotenv';
 import request from 'request';
-import { Logger, proto } from 'common_services';
+import { Logger, GrpcClientFactory, proto } from 'common_services';
 import * as grpc from '@grpc/grpc-js';
 
 dotenv.config();
@@ -12,8 +12,14 @@ const PEOPLE_SERVICE_URL = process.env.PEOPLE_SERVICE_URL!;
 async function main() {
     const logger = Logger.create("GATEWAY");
     const app: Express = express();
-    const client = new proto.PeopleServiceClient(PEOPLE_SERVICE_URL, grpc.ChannelCredentials.createInsecure());
     
+    app.use((req, res, next) => {
+        if(req.path.includes('/search') && !req.query['q']) {
+            res.status(404).send();
+        } else {
+            next();
+        }
+    })    
 
     app.all('/companies/*', (req, res) => {
         const url = `${COMPANIES_SERVICE_URL}/${req.path.replace('/companies/', '')}`;
@@ -21,16 +27,24 @@ async function main() {
     });
 
     app.get('/people/search', (req, res) => {
-        // client.search({
-        //     nume: req.query['q'] as string
-        // }, (error, response) => {
-        //     if (error) {
-        //         res.status(400).send(error);
-        //     }
-        //     res.send({
-        //         ...response
-        //     })
-        // })
+        try {
+            const client = GrpcClientFactory.createClient(PEOPLE_SERVICE_URL);
+
+            client.search({
+                nume: req.query['q'] as string
+            }, (err, response) => {
+                if(err) {
+                    res.status(500).send(err);
+                } else {
+                    res.send({
+                        ...response
+                    })
+                }
+            })
+        } catch(e) {
+            logger.log(e);
+            res.status(400).send('failed');
+        }
     });
 
     app.listen(80, () => {

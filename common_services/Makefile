@@ -1,3 +1,3 @@
 build:
-	npm run generate:proto
+	npm run generate:proto-server
 	npm run build

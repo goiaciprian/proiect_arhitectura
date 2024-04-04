@@ -2,9 +2,10 @@
  * people service
  */
 import express, { Express, Request, Response } from "express";
-import { Logger, RabbitMQConnection, RabbitPeople, proto } from 'common_services';
+import { Logger, RabbitMQConnection, RabbitPeople, proto, RabbitCompanies } from 'common_services';
 import axios from "axios";
 import * as grpc from '@grpc/grpc-js';
+import { faker } from '@faker-js/faker';
 
 interface WealthResponse {
     name: string;
@@ -26,11 +27,11 @@ async function main() {
     const rabbit_username = process.env.RABBIT_USERNAME!;
     const rabbit_password = process.env.RABBIT_PASSWORD!;
 
-    const rabbit_send_channel = 'CHANNEL_1_TO_2';
-    const rabbit_receive_channel = 'CHANNEL_2_TO_1';
+    const rabbit_receive_channel = 'CHANNEL_1_TO_2';
+    const rabbit_send_channel = 'CHANNEL_2_TO_1';
 
     const logger = Logger.create(server_name);
-    const rabbitConnection = new RabbitMQConnection<RabbitPeople, any>(logger);
+    const rabbitConnection = new RabbitMQConnection<RabbitCompanies, RabbitPeople>(logger);
     rabbitConnection.connect(rabbit_username, rabbit_password, rabbit_host);
 
 
@@ -44,7 +45,7 @@ async function main() {
             }
 
             const response = await axios.get<WealthResponse>(`${company_service}/api/getWealth/${nume}`)
-            const queueResponse = await rabbitConnection.getMessage(rabbit_send_channel);
+            const queueResponse = await rabbitConnection.getMessage(rabbit_receive_channel);
     
             if (response.status !== 200) {
                 callback({ code: grpc.status.NOT_FOUND })
@@ -55,12 +56,15 @@ async function main() {
             callback(null, {
                 avere,
                 nume,
-                functie: queueResponse?.functie ?? null 
+                functie: queueResponse?.functie ?? 'rabbit error' 
             })
         },
         valoareEstimata(call: grpc.ServerUnaryCall<proto.RequestDto, proto.ResponseDto>, callback: grpc.sendUnaryData<proto.ResponseDto>) {
+            rabbitConnection.sendToQueue(rabbit_send_channel, {
+                numarAngajati: faker.number.int({ min: 150_000, max: 10_000_000 }),
+            })
             callback(null, {
-                valoareEstimata: 1
+                valoareEstimata: faker.number.int({ min: 150_000, max: 10_000_000 })
             })
         },
     });
@@ -72,35 +76,6 @@ async function main() {
 
         logger.log(`service working at ${port}`);
     });
-
-
-    // app.get('/search', async (req: Request, res: Response) => {
-    //     const q = req.query['q'];
-    //     if (!q) {
-    //         res.status(404).send();
-    //     }
-
-    //     const response = await axios.get<WealthResponse>(`${company_service}/api/getWealth/${q}`)
-    //     const queueResponse = await rabbitConnection.getMessage(rabbit_send_channel);
-
-    //     if (response.status !== 200) {
-    //         res.status(400).send();
-    //     }
-
-    //     const { avere } = response.data;
-
-    //     res.send({
-    //         ...queueResponse ?? { broker: 'response failed' },
-    //         avere,
-    //         msg: `Working ${server_name}`
-    //     });
-    // })
-
-
-    // app.listen(port, () => {
-    //     logger.log(`Server running on ${port}`);
-    // })
-
 }
 
 main()
