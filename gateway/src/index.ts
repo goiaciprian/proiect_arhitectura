@@ -2,7 +2,7 @@ import express, { Express } from 'express';
 import dotenv from 'dotenv';
 import request from 'request';
 import { Logger, GrpcClientFactory, proto } from 'common_services';
-import * as grpc from '@grpc/grpc-js';
+import cors from 'cors';
 
 dotenv.config();
 
@@ -12,6 +12,11 @@ const PEOPLE_SERVICE_URL = process.env.PEOPLE_SERVICE_URL!;
 async function main() {
     const logger = Logger.create("GATEWAY");
     const app: Express = express();
+
+    app.use(cors({
+        allowedHeaders: '*',
+        origin: '*'
+    }))
     
     app.use((req, res, next) => {
         if(req.path.includes('/search') && !req.query['q']) {
@@ -26,7 +31,7 @@ async function main() {
         req.pipe(request({ qs: req.query, uri: url })).pipe(res);
     });
 
-    app.get('/people/search', (req, res) => {
+    app.get('/peoples/search', (req, res) => {
         try {
             const client = GrpcClientFactory.createClient(PEOPLE_SERVICE_URL);
 

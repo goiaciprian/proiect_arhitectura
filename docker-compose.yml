@@ -71,14 +71,32 @@ services:
       - "8080:80"
     networks:
       - proxy_service
+      - client_n
     environment:
       - COMPANY_SERVICE_URL=http://companies:3001
       - PEOPLE_SERVICE_URL=people:3002
     depends_on:
       - people
       - companies
+  
+  client:
+    container_name: fe_client
+    build: 
+      context: .
+      dockerfile: Dockerfile.client
+      args:
+        - VITE_BASE_URL=http://gateway:80
+    networks:
+      - client_n
+    depends_on:
+      - gateway
+    ports:
+      - 8085:80
 
 networks:
+  client_n:
+    name: client_n
+    driver: bridge
   proxy_service:
     name: proxy_service
     driver: bridge

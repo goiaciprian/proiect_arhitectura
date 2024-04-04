@@ -1,0 +1,23 @@
+FROM node:20.9.0-alpine as buildtime
+
+WORKDIR /app
+
+COPY client/package*.json .
+
+RUN npm install
+
+COPY client/ .
+
+ARG VITE_BASE_URL
+ENV VITE_BASE_URL=${VITE_BASE_URL}
+
+RUN npm run build
+
+EXPOSE 80
+
+FROM nginx:alpine as runtime
+
+COPY --from=buildtime ./app/dist /usr/share/nginx/html
+
+# ENTRYPOINT [ "npm", "run", "preview" ]
+

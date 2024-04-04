@@ -29,4 +29,6 @@ WORKDIR /workspace
 COPY --from=buildtime /workspace/ .
 
 WORKDIR /workspace/app
+
+EXPOSE 80
 ENTRYPOINT [ "npm", "run", "start" ]

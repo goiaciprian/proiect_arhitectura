@@ -86,7 +86,7 @@ async function main() {
     const valoareEstimata = !response ? -1 : response.valoareEstimata;
 
     res.send({
-      name,
+      nume: name,
       valoareEstimata,
       numarAngajati: rabbitResponse?.numarAngajati ?? -1 
     });
