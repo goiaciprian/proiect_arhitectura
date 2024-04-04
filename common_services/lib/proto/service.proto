@@ -1,5 +1,7 @@
 syntax = "proto3";
 
+package service;
+
 message RequestDto {
     string nume = 1;
 }
@@ -8,6 +10,13 @@ message ResponseDto {
     int32 valoare_estimata = 1;
 }
 
-service CompanyService {
+message SerachResponseDto {
+    string nume = 1;
+    string functie = 2;
+    int32 avere = 3; 
+}
+
+service PeopleService {
     rpc ValoareEstimata (RequestDto) returns (ResponseDto);
+    rpc search(RequestDto) returns (SerachResponseDto);
 }

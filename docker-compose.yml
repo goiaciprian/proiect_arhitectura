@@ -5,6 +5,11 @@ services:
     container_name: rabbitmq
     restart: on-failure
     hostname: rabbit1
+    healthcheck:
+      test: rabbitmq-diagnostics -q ping
+      interval: 30s
+      timeout: 30s
+      retries: 3
     environment:
       - RABBITMQ_DEFAULT_USER=user
       - RABBITMQ_DEFAULT_PASS=parola
@@ -26,9 +31,13 @@ services:
         - RABBIT_HOST=rabbitmq
         - RABBIT_USERNAME=user
         - RABBIT_PASSWORD=parola
+        - PEOPLE_SERVICE_URL=people:3002
     networks:
       - proxy_service
       - rabbit_connection
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
     
     
   people:
@@ -48,17 +57,26 @@ services:
     networks:
       - proxy_service
       - rabbit_connection
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
 
   gateway:
     container_name: gateway
     restart: on-failure
     build:
       context: .
-      dockerfile: Dockerfile.haproxy
+      dockerfile: Dockerfile.gateway
     ports:
       - "8080:80"
     networks:
       - proxy_service
+    environment:
+      - COMPANY_SERVICE_URL=http://companies:3001
+      - PEOPLE_SERVICE_URL=people:3002
+    depends_on:
+      - people
+      - companies
 
 networks:
   proxy_service:

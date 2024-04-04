@@ -12,6 +12,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@grpc/grpc-js": "^1.10.4",
     "amqplib": "^0.10.3",
     "axios": "^1.6.8",
     "common_services": "file:../common_services",

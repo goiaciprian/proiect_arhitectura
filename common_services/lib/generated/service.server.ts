@@ -10,7 +10,7 @@ import type {
 } from "@grpc/grpc-js";
 import * as _m0 from "protobufjs/minimal";
 
-export const protobufPackage = "";
+export const protobufPackage = "service";
 
 export interface RequestDto {
   nume: string;
@@ -18,6 +18,12 @@ export interface RequestDto {
 
 export interface ResponseDto {
   valoareEstimata: number;
+}
+
+export interface SerachResponseDto {
+  nume: string;
+  functie: string;
+  avere: number;
 }
 
 function createBaseRequestDto(): RequestDto {
@@ -134,10 +140,99 @@ export const ResponseDto = {
   },
 };
 
-export type CompanyServiceService = typeof CompanyServiceService;
-export const CompanyServiceService = {
+function createBaseSerachResponseDto(): SerachResponseDto {
+  return { nume: "", functie: "", avere: 0 };
+}
+
+export const SerachResponseDto = {
+  encode(message: SerachResponseDto, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.nume !== "") {
+      writer.uint32(10).string(message.nume);
+    }
+    if (message.functie !== "") {
+      writer.uint32(18).string(message.functie);
+    }
+    if (message.avere !== 0) {
+      writer.uint32(24).int32(message.avere);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): SerachResponseDto {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseSerachResponseDto();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 10) {
+            break;
+          }
+
+          message.nume = reader.string();
+          continue;
+        case 2:
+          if (tag !== 18) {
+            break;
+          }
+
+          message.functie = reader.string();
+          continue;
+        case 3:
+          if (tag !== 24) {
+            break;
+          }
+
+          message.avere = reader.int32();
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): SerachResponseDto {
+    return {
+      nume: isSet(object.nume) ? globalThis.String(object.nume) : "",
+      functie: isSet(object.functie) ? globalThis.String(object.functie) : "",
+      avere: isSet(object.avere) ? globalThis.Number(object.avere) : 0,
+    };
+  },
+
+  toJSON(message: SerachResponseDto): unknown {
+    const obj: any = {};
+    if (message.nume !== "") {
+      obj.nume = message.nume;
+    }
+    if (message.functie !== "") {
+      obj.functie = message.functie;
+    }
+    if (message.avere !== 0) {
+      obj.avere = Math.round(message.avere);
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<SerachResponseDto>, I>>(base?: I): SerachResponseDto {
+    return SerachResponseDto.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<SerachResponseDto>, I>>(object: I): SerachResponseDto {
+    const message = createBaseSerachResponseDto();
+    message.nume = object.nume ?? "";
+    message.functie = object.functie ?? "";
+    message.avere = object.avere ?? 0;
+    return message;
+  },
+};
+
+export type PeopleServiceService = typeof PeopleServiceService;
+export const PeopleServiceService = {
   valoareEstimata: {
-    path: "/CompanyService/ValoareEstimata",
+    path: "/service.PeopleService/ValoareEstimata",
     requestStream: false,
     responseStream: false,
     requestSerialize: (value: RequestDto) => Buffer.from(RequestDto.encode(value).finish()),
@@ -145,13 +240,23 @@ export const CompanyServiceService = {
     responseSerialize: (value: ResponseDto) => Buffer.from(ResponseDto.encode(value).finish()),
     responseDeserialize: (value: Buffer) => ResponseDto.decode(value),
   },
+  search: {
+    path: "/service.PeopleService/search",
+    requestStream: false,
+    responseStream: false,
+    requestSerialize: (value: RequestDto) => Buffer.from(RequestDto.encode(value).finish()),
+    requestDeserialize: (value: Buffer) => RequestDto.decode(value),
+    responseSerialize: (value: SerachResponseDto) => Buffer.from(SerachResponseDto.encode(value).finish()),
+    responseDeserialize: (value: Buffer) => SerachResponseDto.decode(value),
+  },
 } as const;
 
-export interface CompanyServiceServer extends UntypedServiceImplementation {
+export interface PeopleServiceServer extends UntypedServiceImplementation {
   valoareEstimata: handleUnaryCall<RequestDto, ResponseDto>;
+  search: handleUnaryCall<RequestDto, SerachResponseDto>;
 }
 
-export interface CompanyServiceClient extends Client {
+export interface PeopleServiceClient extends Client {
   valoareEstimata(
     request: RequestDto,
     callback: (error: ServiceError | null, response: ResponseDto) => void,
@@ -167,14 +272,29 @@ export interface CompanyServiceClient extends Client {
     options: Partial<CallOptions>,
     callback: (error: ServiceError | null, response: ResponseDto) => void,
   ): ClientUnaryCall;
+  search(
+    request: RequestDto,
+    callback: (error: ServiceError | null, response: SerachResponseDto) => void,
+  ): ClientUnaryCall;
+  search(
+    request: RequestDto,
+    metadata: Metadata,
+    callback: (error: ServiceError | null, response: SerachResponseDto) => void,
+  ): ClientUnaryCall;
+  search(
+    request: RequestDto,
+    metadata: Metadata,
+    options: Partial<CallOptions>,
+    callback: (error: ServiceError | null, response: SerachResponseDto) => void,
+  ): ClientUnaryCall;
 }
 
-export const CompanyServiceClient = makeGenericClientConstructor(
-  CompanyServiceService,
-  "CompanyService",
+export const PeopleServiceClient = makeGenericClientConstructor(
+  PeopleServiceService,
+  "service.PeopleService",
 ) as unknown as {
-  new (address: string, credentials: ChannelCredentials, options?: Partial<ClientOptions>): CompanyServiceClient;
-  service: typeof CompanyServiceService;
+  new (address: string, credentials: ChannelCredentials, options?: Partial<ClientOptions>): PeopleServiceClient;
+  service: typeof PeopleServiceService;
   serviceName: string;
 };
 

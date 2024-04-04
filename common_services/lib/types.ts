@@ -1,6 +1,6 @@
 export interface RabbitPeople {
     nume: string;
-    numar_angajati: number;
+    functie: string;
 }
 
 export interface GrpcRequestDto {
@@ -13,4 +13,9 @@ export interface GrpcResponseDto {
 
 export interface GrpcServer {
     ValoareEstimata: (request: GrpcRequestDto) => GrpcResponseDto;
+}
+
+export interface RabbitCompanies {
+    nume: string;
+    numarAngajati: number;
 }

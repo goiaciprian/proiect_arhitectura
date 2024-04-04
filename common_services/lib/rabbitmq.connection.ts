@@ -30,7 +30,7 @@ export class RabbitMQConnection<I, O> {
             this.logger.error(`Nu s-a putut conecta la RabbitMq`);
         }
     }
-    async sendToQueue(queue: string, message: I) {
+    async sendToQueue<I>(queue: string, message: I) {
         try {
           // const uuid = randomUUID();
           if (!this.channel) {
@@ -43,7 +43,6 @@ export class RabbitMQConnection<I, O> {
           throw error;
         }
       }
-
     private async consume(queue: string, id: string, cb: (response: O) => void) {
       await this.channel.assertQueue(queue, {
         // coada nu o sa se stearga daca rabbit crashes
@@ -61,7 +60,7 @@ export class RabbitMQConnection<I, O> {
       })
     }
 
-    async getMessage(queue: string) {
+    async getMessage(queue: string): Promise<O | null> {
       const id = randomUUID();
       return await new Promise<O | null>((resolve) => {
         // asteptam pentru 5s pentru primirea mesajului daca nu rezolvam promisiunea cu null

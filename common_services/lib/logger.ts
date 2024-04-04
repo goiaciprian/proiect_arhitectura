@@ -1,6 +1,6 @@
 export interface ILogger {
-    log(message: string): void;
-    error(message: string): void;
+    log(message: any): void;
+    error(message: any): void;
 }
 
 
@@ -19,11 +19,11 @@ export class Logger implements ILogger {
         this.server_name = server_name;
     }
 
-    log(message: string) {
+    log(message: any) {
         console.log(`[${this.server_name}]: ${message}`);
     }
 
-    error(message: string) {
+    error(message: any) {
         console.error(`[${this.server_name}]: ${message}`);
     }
 
