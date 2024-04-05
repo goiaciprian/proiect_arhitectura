@@ -13,6 +13,11 @@ async function main() {
     const logger = Logger.create("GATEWAY");
     const app: Express = express();
 
+    app.use((req, res, next) => {
+        logger.info(`Request started for: ${req.path} with name: ${req.query['q']}`);
+        next();
+    });
+
     app.use(cors({
         allowedHeaders: '*',
         origin: '*'
@@ -47,13 +52,13 @@ async function main() {
                 }
             })
         } catch(e) {
-            logger.log(e);
+            logger.error(e);
             res.status(400).send('failed');
         }
     });
 
     app.listen(80, () => {
-        logger.log(`app listening on 80`)
+        logger.info(`app listening on 80`)
     });
 }
 

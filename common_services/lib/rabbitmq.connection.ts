@@ -1,5 +1,5 @@
 import client, { Connection, Channel, ConsumeMessage } from 'amqplib';
-import { ILogger } from './logger';
+import { ILogger, Logger } from './logger';
 import { Console } from 'inspector';
 import { randomUUID } from 'crypto';
 
@@ -8,23 +8,27 @@ export class RabbitMQConnection<I, O> {
     private channel!: Channel;
     private connected: boolean = false;
 
-    constructor(private readonly logger: ILogger | Console = console) { }
+    private readonly logger: ILogger;
+
+    constructor(server_name: string) {
+      this.logger = Logger.create(server_name);
+     }
 
     async connect(username: string, password: string, host: string, port: number = 5672) {
         if (this.connected && this.channel) return;
         else this.connected = true;
 
         try {
-            this.logger.log(`Se conecteaza la RabbitMq`);
+            this.logger.info(`Se conecteaza la RabbitMq`);
             this.connection = await client.connect(
                 `amqp://${username}:${password}@${host}:${port}`
             );
 
-            this.logger.log(`RabbitMq conectat`);
+            this.logger.info(`RabbitMq conectat`);
 
             this.channel = await this.connection.createChannel();
 
-            this.logger.log(`Canalul pentru RabbitMq a fost creat`);
+            this.logger.info(`Canalul pentru RabbitMq a fost creat`);
         } catch (error) {
             console.error(error);
             this.logger.error(`Nu s-a putut conecta la RabbitMq`);

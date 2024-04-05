@@ -53,7 +53,7 @@ async function main() {
   const app: Express = express();
 
   const rabbitConnetion = new RabbitMQConnection<RabbitPeople, RabbitCompanies>(
-    logger
+    server_name
   );
   rabbitConnetion.connect(rabbit_username, rabbit_password, rabbit_host);
 
@@ -61,6 +61,7 @@ async function main() {
 
   app.get("/api/getWealth/:name", async (req: Request, res: Response) => {
     const name = req.params["name"];
+    logger.info(`Received request for avere with name: ${name}`);
     if (!name) {
       res.status(400).send();
     }
@@ -78,22 +79,23 @@ async function main() {
 
   app.get("/search", async (req: Request, res: Response) => {
     const name = req.query["q"] as string;
+    logger.info(`Received request for search with name: ${name}`);
     const [rabbitResponse, response] = await Promise.all([
       rabbitConnetion.getMessage(rabbit_receive_channel),
       getResponseFromGrpcValoareEstimata(grpcClient, name),
     ]);
 
-    const valoareEstimata = !response ? -1 : response.valoareEstimata;
+    const valoare_estimata = !response ? -1 : response.valoareEstimata;
 
     res.send({
       nume: name,
-      valoareEstimata,
-      numarAngajati: rabbitResponse?.numarAngajati ?? -1 
+      valoare_estimata,
+      numar_angajati: rabbitResponse?.numarAngajati ?? -1
     });
   });
 
   app.listen(port, () => {
-    logger.log(`Server running on ${port}`);
+    logger.info(`Server running on ${port}`);
   });
 }
 

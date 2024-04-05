@@ -13,7 +13,7 @@ export const StatsDisplay = ({
                 {data.map(item => {
                     return (
                         <Stat key={item.label}>
-                            <StatLabel>{item.label}</StatLabel>
+                            <StatLabel width='max-content' >{item.label}</StatLabel>
                             <StatNumber width='max-content' >{item.value}</StatNumber>
                         </Stat>
                     )

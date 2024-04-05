@@ -17,7 +17,6 @@ async function main() {
     const dotenv = require('dotenv');
     dotenv.config();
 
-    const app: Express = express();
     const port = process.env.PORT;
     const server_name = process.env.SERVER_NAME!;
     const company_service = process.env.COMPANY_SERVICE!;
@@ -31,7 +30,7 @@ async function main() {
     const rabbit_send_channel = 'CHANNEL_2_TO_1';
 
     const logger = Logger.create(server_name);
-    const rabbitConnection = new RabbitMQConnection<RabbitCompanies, RabbitPeople>(logger);
+    const rabbitConnection = new RabbitMQConnection<RabbitCompanies, RabbitPeople>(server_name);
     rabbitConnection.connect(rabbit_username, rabbit_password, rabbit_host);
 
 
@@ -40,6 +39,7 @@ async function main() {
     server.addService(proto.PeopleServiceService, {
         async search(call: grpc.ServerUnaryCall<proto.RequestDto, proto.SerachResponseDto>, callback: grpc.sendUnaryData<proto.SerachResponseDto>) {
             const nume = call.request.nume;
+            logger.info(`Received search request with name: ${nume}`);
             if(!nume) {
                 callback({ code: grpc.status.NOT_FOUND })
             }
@@ -60,6 +60,7 @@ async function main() {
             })
         },
         valoareEstimata(call: grpc.ServerUnaryCall<proto.RequestDto, proto.ResponseDto>, callback: grpc.sendUnaryData<proto.ResponseDto>) {
+            logger.info(`Received request for valoareEstimata for: ${call.request.nume}`);
             rabbitConnection.sendToQueue(rabbit_send_channel, {
                 numarAngajati: faker.number.int({ min: 150_000, max: 10_000_000 }),
             })
@@ -74,7 +75,7 @@ async function main() {
             logger.error(err)
         }
 
-        logger.log(`service working at ${port}`);
+        logger.info(`service working at ${port}`);
     });
 }
 

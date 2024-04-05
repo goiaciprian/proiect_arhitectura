@@ -1,30 +1,27 @@
-export interface ILogger {
-    log(message: any): void;
-    error(message: any): void;
-}
+import * as winston from 'winston';
+
+export type ILogger = winston.Logger;
 
 
-export class Logger implements ILogger {
-    private static instance: Logger | null;
-    private readonly server_name: string;
-
+export class Logger {
     static create(server_name: string) {
-        if(!this.instance) {
-            this.instance = new Logger(server_name);
-        };
-        return this.instance;
-    }
-
-    private constructor(server_name: string) {
-        this.server_name = server_name;
-    }
-
-    log(message: any) {
-        console.log(`[${this.server_name}]: ${message}`);
-    }
-
-    error(message: any) {
-        console.error(`[${this.server_name}]: ${message}`);
+        return winston.createLogger({
+            level: 'info',
+            defaultMeta: {
+                service: server_name,
+            },
+            transports: [
+                new winston.transports.Console()
+            ],
+            format: winston.format.combine(
+                winston.format.colorize({ all: true }),
+                winston.format.timestamp(),
+                winston.format.align(),
+                winston.format.ms(),
+                winston.format.metadata(),
+                winston.format.cli()
+            )
+        })
     }
 
 }

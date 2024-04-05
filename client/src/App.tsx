@@ -4,7 +4,7 @@ import {  EndpointCall } from '@/types';
 import { useGatewayEndpoint } from '@/hooks/useGatewayEndpoint';
 import { Message } from '@/components/Message';
 import { StatsDisplay } from '@/components/Stats.display';
-import { capitalize } from '@/utils';
+import { capitalizeAndFormat } from '@/utils';
 
 const selectOptions = [
   'peoples',
@@ -81,7 +81,7 @@ function App() {
       switch (true) {
         case (responseCall.isLoaded && responseCall.lastCall === 'companies'):
         case (responseCall.isLoaded && responseCall.lastCall === 'peoples'):
-          return <StatsDisplay data={Object.keys(responseCall.data).map((key) => ({ label: capitalize(key), value: (responseCall.data as any)[key] }))} />
+          return <StatsDisplay data={Object.keys(responseCall.data).map((key) => ({ label: capitalizeAndFormat(key), value: (responseCall.data as any)[key] }))} />
         case (!responseCall.isFailed && !responseCall.isLoaded && responseCall.isLoading):
           return <CircularProgress isIndeterminate />
         case (responseCall.isFailed && responseCall.status === 404):
@@ -105,7 +105,7 @@ function App() {
               <FormControl>
                 <FormLabel>Options</FormLabel>
                 <Select defaultValue={options.value} onChange={e => dispatch({ action: 'set_value', key: 'options', value: e.target.value as EndpointCall })} >
-                  {selectOptions.map(opt => <option key={opt} value={opt}>{capitalize(opt)}</option>)}
+                  {selectOptions.map(opt => <option key={opt} value={opt}>{capitalizeAndFormat(opt)}</option>)}
                 </Select>
               </FormControl>
 
