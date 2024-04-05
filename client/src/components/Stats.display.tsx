@@ -12,7 +12,7 @@ export const StatsDisplay = ({
             <StatGroup gap={'50px'} >
                 {data.map(item => {
                     return (
-                        <Stat>
+                        <Stat key={item.label}>
                             <StatLabel>{item.label}</StatLabel>
                             <StatNumber width='max-content' >{item.value}</StatNumber>
                         </Stat>

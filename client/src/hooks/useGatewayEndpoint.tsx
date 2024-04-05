@@ -61,7 +61,7 @@ export const useGatewayEndpoint = () => {
 
     const start = async (query: string | undefined, endpoint: EndpointCall) => {
         startCall(endpoint);
-        await axiosInstance.get<PeopleResponse | CompaniesResponse>(`/${endpoint}/search?q=${query}`)
+        await axiosInstance.get<PeopleResponse | CompaniesResponse>(`/api/${endpoint}/search?q=${query}`)
             .then(r => {
                 setData({
                     data: r.data,
