@@ -13,7 +13,6 @@ const PEOPLE_SERVICE_URL = process.env.PEOPLE_SERVICE_URL!;
 async function main() {
     const logger = Logger.create("GATEWAY");
     const app: Express = express();
-    const client = GrpcClientFactory.createClient(PEOPLE_SERVICE_URL);
 
     app.use((req, res, next) => {
         logger.info(`Request started for: ${req.path} with name: ${req.query['q']}`);
@@ -46,6 +45,7 @@ async function main() {
 
     app.get('/peoples/search', (req, res) => {
         try {
+            const client = GrpcClientFactory.createClient(PEOPLE_SERVICE_URL);
             client.search({
                 nume: req.query['q'] as string
             }, (err, response) => {

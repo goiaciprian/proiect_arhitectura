@@ -7,10 +7,7 @@
   "author": "",
   "license": "ISC",
   "scripts": {
-    "generate:proto3": "proto-loader-gen-types --grpcLib=@grpc/grpc-js --outDir=lib/generated lib/proto/service.proto",
-    "generate:proto2": "grpc_tools_node_protoc --plugin=protoc-gen-ts=./node_modules/.bin/protoc-gen-ts.cmd --ts_out=grpc_js:. -I lib/proto lib/proto/*.proto",
     "generate:proto-server": "protoc --plugin=./node_modules/.bin/protoc-gen-ts_proto.cmd --ts_proto_out=./lib/generated --ts_proto_opt=fileSuffix=.server --ts_proto_opt=outputServices=grpc-js --ts_proto_opt=esModuleInterlop=true -I=lib/proto/ lib/proto/*.proto",
-    "generate:proto-client": "protoc --plugin=./node_modules/.bin/protoc-gen-ts_proto.cmd --ts_proto_out=./lib/generated --ts_proto_opt=fileSuffix=.client --ts_proto_opt=outputClientImpl=grpc-web --ts_proto_opt=esModuleInterlop=true -I=lib/proto/ lib/proto/*.proto",
     "build": "tsc"
   },
   "devDependencies": {
