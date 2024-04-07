@@ -79,6 +79,8 @@ function App() {
 
     const renderResponse = () => {
       switch (true) {
+        case (responseCall.isFailed && responseCall.status === 429):
+          return <Message message='Prea multe request-uri' />
         case (responseCall.isLoaded && responseCall.lastCall === 'companies'):
         case (responseCall.isLoaded && responseCall.lastCall === 'peoples'):
           return <StatsDisplay data={Object.keys(responseCall.data).map((key) => ({ label: capitalizeAndFormat(key), value: (responseCall.data as any)[key] }))} />

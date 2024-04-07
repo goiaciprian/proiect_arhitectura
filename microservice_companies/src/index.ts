@@ -16,6 +16,7 @@ import { faker } from "@faker-js/faker";
 const port = process.env.PORT;
 const server_name = process.env.SERVER_NAME!;
 
+// broker
 const rabbit_host = process.env.RABBIT_HOST!;
 const rabbit_username = process.env.RABBIT_USERNAME!;
 const rabbit_password = process.env.RABBIT_PASSWORD!;

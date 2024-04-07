@@ -1,7 +1,10 @@
 import * as winston from 'winston';
 
-export type ILogger = winston.Logger;
+/**
+ * Config pentru logguri comun
+ */
 
+export type ILogger = winston.Logger;
 
 export class Logger {
     static create(server_name: string) {

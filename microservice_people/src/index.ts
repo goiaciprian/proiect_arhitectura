@@ -1,7 +1,6 @@
 /**
  * people service
  */
-import express, { Express, Request, Response } from "express";
 import { Logger, RabbitMQConnection, RabbitPeople, proto, RabbitCompanies } from 'common_services';
 import axios from "axios";
 import * as grpc from '@grpc/grpc-js';

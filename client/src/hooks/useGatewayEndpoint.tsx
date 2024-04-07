@@ -25,7 +25,7 @@ type FailState = {
     data: null,
     isFailed: true,
     isLoaded: false,
-    isLoading: true,
+    isLoading: false,
     lastCall: EndpointCall,
     status: number;
 
@@ -78,7 +78,7 @@ export const useGatewayEndpoint = () => {
                     data: null,
                     isFailed: true,
                     isLoaded: false,
-                    isLoading: true,
+                    isLoading: false,
                     lastCall: endpoint,
                     status: e.response?.status ?? 500
                 })

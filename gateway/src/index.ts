@@ -1,8 +1,9 @@
 import express, { Express } from 'express';
 import dotenv from 'dotenv';
 import request from 'request';
-import { Logger, GrpcClientFactory, proto } from 'common_services';
+import { Logger, GrpcClientFactory } from 'common_services';
 import cors from 'cors';
+import rateLimit from 'express-rate-limit';
 
 dotenv.config();
 
@@ -12,12 +13,19 @@ const PEOPLE_SERVICE_URL = process.env.PEOPLE_SERVICE_URL!;
 async function main() {
     const logger = Logger.create("GATEWAY");
     const app: Express = express();
+    const client = GrpcClientFactory.createClient(PEOPLE_SERVICE_URL);
 
     app.use((req, res, next) => {
         logger.info(`Request started for: ${req.path} with name: ${req.query['q']}`);
         next();
     });
 
+    app.use(rateLimit({
+        max: 5,
+        windowMs: 3000
+    }))
+
+    // permite request uri de pe toate domeniile si cu toate metodele PUT GET POST
     app.use(cors({
         allowedHeaders: '*',
         origin: '*'
@@ -38,8 +46,6 @@ async function main() {
 
     app.get('/peoples/search', (req, res) => {
         try {
-            const client = GrpcClientFactory.createClient(PEOPLE_SERVICE_URL);
-
             client.search({
                 nume: req.query['q'] as string
             }, (err, response) => {

@@ -1,8 +1,10 @@
 import client, { Connection, Channel, ConsumeMessage } from 'amqplib';
 import { ILogger, Logger } from './logger';
-import { Console } from 'inspector';
 import { randomUUID } from 'crypto';
 
+/**
+ * Implementare comuna pentru conectarea la broker
+ */
 export class RabbitMQConnection<I, O> {
     private connection!: Connection;
     private channel!: Channel;
@@ -57,6 +59,7 @@ export class RabbitMQConnection<I, O> {
         if(msg) {
           const message = JSON.parse(msg.content.toString());
           cb(message);
+          // confirma ca mesajul s-a primit de la rabbitmq
           this.channel.ack(msg);
         }
       }, {
